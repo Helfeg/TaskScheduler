@@ -1,0 +1,305 @@
+﻿<Window x:Class="TaskScheduler.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        Title="Task Scheduler" Height="600" Width="882"
+        WindowStartupLocation="CenterScreen"
+        Background="#FF2D2D30">
+    <Window.Resources>
+        <!-- Список статусов -->
+        <x:Array x:Key="StatusList" Type="{x:Type sys:String}">
+            <sys:String>Planned</sys:String>
+            <sys:String>In Progress</sys:String>
+            <sys:String>Completed</sys:String>
+            <sys:String>Просрочено</sys:String>
+            <sys:String>Archived</sys:String>
+        </x:Array>
+
+        <!-- Список категорий -->
+        <x:Array x:Key="CategoryList" Type="{x:Type sys:String}">
+            <sys:String>Работа</sys:String>
+            <sys:String>Личное</sys:String>
+            <sys:String>Учеба</sys:String>
+            <sys:String>Другое</sys:String>
+        </x:Array>
+
+        <!-- Стили для кнопок -->
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#FF3F3F41"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="5"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect ShadowDepth="2" Opacity="0.5" BlurRadius="5"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF5A5A5C"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#FF2D2D30"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Стили для ComboBox -->
+        <Style TargetType="ComboBox">
+            <Setter Property="Background" Value="#FF3F3F41"/>
+            <Setter Property="Foreground" Value="DarkGray"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="5"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}">
+                            <Grid>
+                                <ToggleButton Name="ToggleButton"
+                                              Grid.Column="2"
+                                              Focusable="False"
+                                              IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                              ClickMode="Press"/>
+                                <ContentPresenter Name="ContentSite"
+                                                  IsHitTestVisible="False"
+                                                  Content="{TemplateBinding SelectionBoxItem}"
+                                                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                  ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                                  Margin="5,3,23,3"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Left"/>
+                                <TextBox x:Name="PART_EditableTextBox"
+                                         Style="{x:Null}"
+                                         HorizontalAlignment="Left"
+                                         VerticalAlignment="Center"
+                                         Margin="5,3,23,3"
+                                         Focusable="True"
+                                         Background="Transparent"
+                                         Foreground="{TemplateBinding Foreground}"
+                                         Visibility="Hidden"
+                                         IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                                <Popup Name="Popup"
+                                       Placement="Bottom"
+                                       IsOpen="{TemplateBinding IsDropDownOpen}"
+                                       AllowsTransparency="True"
+                                       Focusable="False"
+                                       PopupAnimation="Slide">
+                                    <Grid Name="DropDown"
+                                          SnapsToDevicePixels="True"
+                                          MinWidth="{TemplateBinding ActualWidth}"
+                                          MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                        <Border x:Name="DropDownBorder"
+                                                Background="{TemplateBinding Background}"
+                                                CornerRadius="5"
+                                                BorderThickness="1"
+                                                BorderBrush="#FF5A5A5C"/>
+                                        <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
+                                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                        </ScrollViewer>
+                                    </Grid>
+                                </Popup>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Стили для TextBox -->
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="#FF3F3F41"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="5"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}">
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Стили для DataGrid -->
+        <Style TargetType="DataGrid">
+            <Setter Property="Background" Value="#FF3F3F41"/>
+            <Setter Property="Foreground" Value="#FF3F3F41"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="RowBackground" Value="#FF3F3F41"/>
+            <Setter Property="AlternatingRowBackground" Value="#FF2D2D30"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+            <Setter Property="GridLinesVisibility" Value="None"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="CellStyle">
+                <Setter.Value>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="Padding" Value="10"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="DataGridCell">
+                                    <Border Background="{TemplateBinding Background}"
+                                            CornerRadius="5"
+                                            BorderThickness="0"
+                                            BorderBrush="Transparent">
+                                        <ContentPresenter VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Task List -->
+        <DataGrid x:Name="TaskDataGrid" CellEditEnding="TaskDataGrid_CellEditEnding" AutoGenerateColumns="False" Grid.Row="0" ItemsSource="{Binding TaskManager.Tasks}" SelectionMode="Single" Margin="10">
+            <DataGrid.Resources>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <!-- Цвета для категорий -->
+                        <DataTrigger Binding="{Binding Category}" Value="Работа">
+                            <Setter Property="Background" Value="#FF4A90E2"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Category}" Value="Личное">
+                            <Setter Property="Background" Value="#FF50E3C2"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Category}" Value="Учеба">
+                            <Setter Property="Background" Value="#FFF8E71C"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Category}" Value="Другое">
+                            <Setter Property="Background" Value="#FFBD10E0"/>
+                        </DataTrigger>
+
+                        <!-- Цвета для приоритетов -->
+                        <DataTrigger Binding="{Binding Priority}" Value="High">
+                            <Setter Property="Foreground" Value="#FFD0021B"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Priority}" Value="Medium">
+                            <Setter Property="Foreground" Value="#FFF5A623"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Priority}" Value="Low">
+                            <Setter Property="Foreground" Value="#FF7ED321"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="*"/>
+                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="2*"/>
+                <DataGridTextColumn Header="Due Date" Binding="{Binding DueDate}" Width="*"/>
+                <DataGridTextColumn Header="Priority" Binding="{Binding Priority}" Width="*"/>
+                <DataGridComboBoxColumn Header="Category" SelectedItemBinding="{Binding Category, UpdateSourceTrigger=PropertyChanged}" Width="*">
+                    <DataGridComboBoxColumn.ElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{StaticResource CategoryList}" />
+                        </Style>
+                    </DataGridComboBoxColumn.ElementStyle>
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{StaticResource CategoryList}" />
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
+                <DataGridComboBoxColumn Header="Status" SelectedItemBinding="{Binding Status, UpdateSourceTrigger=PropertyChanged}" Width="*">
+                    <DataGridComboBoxColumn.ElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{StaticResource StatusList}" />
+                        </Style>
+                    </DataGridComboBoxColumn.ElementStyle>
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{StaticResource StatusList}" />
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Controls -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+            <Button Content="Добавить задачу" Click="AddTaskButton_Click" Width="150" />
+            <Button Content="Удалить задачу" Click="DeleteTaskButton_Click"  Width="150" />
+
+            <Button Width="150" Content="Mark Completed" Click="MarkCompletedButton_Click" Margin="5"/>
+            <Button Width="100" Content="Save" Click="SaveButton_Click" Margin="5"/>
+            <Button Width="100" Content="Load" Click="LoadButton_Click" Margin="5"/>
+        </StackPanel>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="10">
+            <TextBlock Text="Фильтр по приоритету:" FontWeight="Bold" VerticalAlignment="Center" Margin="5" Foreground="White"/>
+            <ComboBox x:Name="PriorityFilterComboBox" Width="150" SelectionChanged="FilterComboBox_SelectionChanged">
+                <ComboBoxItem Content="Все приоритеты" IsSelected="True" />
+                <ComboBoxItem Content="Low" />
+                <ComboBoxItem Content="Medium" />
+                <ComboBoxItem Content="High" />
+            </ComboBox>
+            <TextBlock Text="Фильтр по статусу:" FontWeight="Bold" VerticalAlignment="Center" Margin="5" Foreground="White"/>
+            <ComboBox x:Name="StatusFilterComboBox" Width="150" SelectionChanged="FilterComboBox_SelectionChanged">
+                <ComboBoxItem Content="Все статусы" IsSelected="True" />
+                <ComboBoxItem Content="Planned" />
+                <ComboBoxItem Content="In Progress" />
+                <ComboBoxItem Content="Completed" />
+                <ComboBoxItem Content="Archived" />
+            </ComboBox>
+        </StackPanel>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="584,10,-564,10">
+            <TextBlock Text="Фильтр по категории:" FontWeight="Bold" VerticalAlignment="Center" Margin="5" Foreground="White"/>
+            <ComboBox x:Name="CategoryFilterComboBox" Width="150" SelectionChanged="FilterComboBox_SelectionChanged">
+                <ComboBoxItem Content="Все категории" IsSelected="True" />
+                <ComboBoxItem Content="Работа" />
+                <ComboBoxItem Content="Личное" />
+                <ComboBoxItem Content="Учеба" />
+                <ComboBoxItem Content="Другое" />
+            </ComboBox>
+        </StackPanel>
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Left" Margin="10">
+            <TextBlock Text="Поиск:" FontWeight="Bold" VerticalAlignment="Center" Margin="5" Foreground="White"/>
+            <TextBox x:Name="SearchTextBox" Width="300" Margin="5" 
+                     VerticalAlignment="Center" 
+                     TextChanged="SearchTextBox_TextChanged" />
+            <Button Content="Очистить" Click="ClearSearchButton_Click" Width="100" Margin="5"/>
+        </StackPanel>
+    </Grid>
+</Window>
